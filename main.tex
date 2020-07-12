@@ -1,0 +1,366 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{url}
+\usepackage{cite}
+\usepackage{amsmath}
+%\usepackage[a4paper, total={6in, 8in}]{geometry}
+
+
+%\newcommand{\plogo}{\fbox{$\mathcal{PL}$}} 
+
+
+
+%\usepackage{fouriernc} 
+   
+   
+\begin{document} 
+
+\begin{titlepage} 
+
+	\centering 
+	
+	%\scshape 
+	
+	\vspace*{\baselineskip} 
+	
+	%------------------------------------------------
+	%	Title
+	%------------------------------------------------
+	
+	\rule{\textwidth}{1.6pt}\vspace*{-\baselineskip}\vspace*{2pt} 
+	\rule{\textwidth}{0.4pt} 
+	
+	\vspace{0.75\baselineskip} 
+	
+	{\LARGE Optimizing Course Scheduling for the\\ Operations Research\\ Undergraduate Program at Simon Fraser University\\} % Title
+	
+	\vspace{0.75\baselineskip} % Whitespace below the title
+	
+	\rule{\textwidth}{1pt}\vspace*{-\baselineskip}\vspace{3.2pt} % Thin horizontal rule
+	\rule{\textwidth}{2pt} % Thick horizontal rule
+	
+	\vspace{1\baselineskip} % Whitespace after the title block
+	
+	%------------------------------------------------
+	%	Subtitle
+	%------------------------------------------------
+	
+	%{\LARGE MATH 208W FINAL PROJECT} % Subtitle or further description
+	
+	%\vspace*{6\baselineskip} % Whitespace under the subtitle
+	
+	%------------------------------------------------
+	%	Editor(s)
+	%------------------------------------------------
+	%	Done By
+	
+	\vspace{1\baselineskip} % Whitespace before the editors
+	
+	{\Large Kevin He, Tanzina Islam, Progga Sinha Saha\\}
+	Department of Mathematics\\
+	Simon Fraser University% Editor list
+	
+	\vspace{5\baselineskip} % Whitespace below the editor list
+	
+	%$$\textit{} % Editor affiliation
+	
+	%\vfill % Whitespace between editor names and publisher logo
+	
+	
+
+\begin{center}
+    \textbf{\large Abstract}\\
+Simon Fraser University's (SFU) Department of Mathematics offers an Operations Research (OR) program at the undergraduate level. Multiple 300 and 400 level courses are offered very scarcely, making course planning very tedious. The goal of the model is to create a comprehensive course planner for the program.
+\end{center}
+
+\end{titlepage}
+
+
+
+
+
+\section{Introduction}
+\subsection{Background}
+
+
+OR is a rising field of study at SFU.  The  program consists of three requirements: Lower Division, Upper Division, and Interdisciplinary. Students are able to cater their study towards their interests through the interdisciplinary requirements, as they are able to enroll for subjects of study with OR applications. The program primary focus on complex mathematical and simulation models to solve problems involving operational systems. Compared to other disciplines, OR is lesser known and has a lower population of students. This results in fewer information and guidelines for a student within the OR program. When students pursue a degree or are interested in the field of OR, they often find themselves in a difficult situation where they feel lost and need to seek guidance.
+
+\subsection{Goal}
+
+In this paper, we want to optimize course scheduling for the OR undergraduate program at SFU. Students often consider multiple factors while choosing their courses each semester. These factors range from creating a balanced academic workload to ensuring that they meet the prerequisites for future required courses.\\
+
+The main difficulty with course planning for the OR major is that nearly all upper division courses are offered once per academic year or once per two academic years, making these courses vital to enroll for when available. These courses as well, are often locked behind numerous prerequisites, which only adds on to the factors that the student must consider during course enrollment. The penalty for missing one of these courses cascades, as they're often prerequisites for other higher level courses, forcing the student to delay their graduation by 1-2 years at minimum. The goal of the model is to reduce the stress of students in the OR program during enrollment times by providing a comprehensive course planner that addresses these issues.
+
+
+
+\section{Data}
+
+The OR major's required courses alongside SFU Degree requirements for graduation were found through the SFU Student Services Calendar. The Summer 2020 calendar was used as it has the most updated information \cite{ORCalendar}. The major's required courses cover three separate disciplines, those being Mathematics (MATH)/Mathematics and Computing Science (MACM), Statistics (STAT), and Computing Science (CMPT). To gather data on course availability for these areas, we consulted the departmental website of each respective discipline. The Department of Statistics and Actuarial Science, the School of Computing Science, and the Department of Mathematics all provided a two-year rotation pattern for their courses that we used to predict future course offerings\cite{CMPTCourses} \cite{STATCourses}\cite{MATHCourses}.
+
+
+
+
+\section{Model}
+ We decided to model using a Mixed-Integer Program (MIP) on Microsoft Excel . We modelled it as staggered supply and demand problem, where taking specific courses allowed us to access other courses in the future. 
+
+\subsection{Assumptions}
+To simplify our model, we created general assumptions. These assumptions are:
+\begin{itemize}
+    \item Courses will be offered in accordance with the two year rotation patterns from the Department of Statistics and Actuarial Science, the School of Computing Science, and the Department of Mathematics
+    \item The two year rotation pattern will repeat with no changes during the student's studies
+    \item If a course is offered in more than one campus (Burnaby, Surrey, Vancouver), only the Burnaby campus's course projection will be considered 
+    \item The student satisfies the Foundations of Academic Literacy and Foundations of Analytical and Quantitative Reasoning designations
+    \item The student will be taking a traditional full course workload (5 courses per semester)
+    \item The student will only enroll for the Fall and Spring Terms
+    \item Each course is counted as 3 credits
+    \item The student will begin in a fall semester of an even year
+    \item Interdisciplinary courses are offered every semester
+    \item For choose n out of m course requirements, all m courses will be completed
+\end{itemize}
+
+
+
+\subsection{Decision Variables}
+We let $x_{i,j}$ denote that course $i$ is taken in semester $j$, where $i$ comes from the list of courses [CMPT 120, CMPT 129, CMPT 225,..., MATH 345, B-HUM,B-SOC, ..., INTERDISCIPLINARY], $j$ comes from the list of semesters [FALL 1, SPRING 1,...,SPRING 4,SUMMER 4] and $i$, $j$ are binary values. The list of courses is arranged in the order they appear on the OR Major Calendar, and the list of semesters is arranged chronologically by academic year. we also included Writing-Quantitative-Breadth and interdisciplinary requirements in the list of courses.
+
+\[ x_{i,j} = \begin{cases} 
+      0 & \text{course i is not taken in semester j} \\
+      1 & \text{course i is taken in semester j} 
+   \end{cases}
+\]
+
+
+\subsection{Objective Function}
+We introduce a cost matrix, $C_{i,j}$ to ensure that 100,200,300, and 400 level required courses are enrolled within a time appropriate to the student's academic level. This cost scheme follows:
+
+\[ \text{100 level course} = \begin{cases} 
+      1 & \text{course is taken in year 1} \\
+      10 & \text{course is taken in year 2} \\
+      100 & \text{course is taken in year 3} \\
+      1000 & \text{course is taken in year 4} 
+   \end{cases}
+\]
+
+\[ \text{200 level course} = \begin{cases} 
+      10 & \text{course is taken in year 1} \\
+      1 & \text{course is taken in year 2} \\
+      10 & \text{course is taken in year 3} \\
+      1000 & \text{course is taken in year 4} 
+   \end{cases}
+\]
+
+\[ \text{300 level course} = \begin{cases} 
+      100 & \text{course is taken in year 1} \\
+      10 & \text{course is taken in year 2} \\
+      1 & \text{course is taken in year 3} \\
+      10 & \text{course is taken in year 4} 
+   \end{cases}
+\]
+
+\[ \text{400 level course} = \begin{cases} 
+      1000 & \text{course is taken in year 1} \\
+      100 & \text{course is taken in year 2} \\
+      10 & \text{course is taken in year 3} \\
+      1 & \text{course is taken in year 4} 
+   \end{cases}
+\]
+
+\noindent
+As well, to prevent courses in the Summer semester, 
+
+\[ C_{i,j} = \begin{cases} 
+      1000 & \text{if j is the Summer semester} \\
+      \text{level cost} & \text{Associated cost for a nth level course taken in jth year}
+   \end{cases}
+\]
+
+\noindent
+The Objective Function is to minimize the assigned course cost weight over the span of years taken to complete this major to ensure that courses are taken during appropriate times.
+\begin{center}
+    Minimize $\sum_{i=1}^{31} \sum_{j = 1}^{12} C_{ij} x_{ij} $ 
+\end{center}
+
+
+
+\subsection{Constraints}
+
+The constraints are as follows:\\
+
+\noindent
+All courses required for the OR Major must be completed sometime between the 4 years (12 semesters), and all courses of type choose n courses from m courses are completed:
+
+  $$ \sum_{j=1}^{12} x_{i,j}  = 1$$
+
+
+\noindent
+Students are expected to enroll for a full academic workload, we want to have five courses per semester:
+ 
+$$\sum_{i=1}^{31} x_{ij}  = 5$$
+
+\noindent
+To balance the academic workload, we want to take less than or equal to 4 required courses per semester:
+ 
+   $$ \sum_{i=1}^{27} x_{ij}  \leq 4$$
+
+
+\noindent
+120 credits are required for undergraduate graduation:
+$$ \sum_{i=1}^{31} \sum_{j=1}^{12} 3 * x_{ij}  >= 120 $$
+
+\noindent
+Prerequisite courses must be satisfied before being allowed to take specific courses:
+$$ x_{i,j} \leq \frac{{\sum_{y}} \sum_{m =1}^{j-1} x_{y,m}}{n}$$
+\begin{center}
+    where n is the number of prerequisite courses for course i\\
+    and y is in the set of required courses for course i
+\end{center}
+
+\noindent
+Completion of the 6 credits upper division STAT requirement:
+$$ \sum_{j=1}^{12} 3x_{27,j} \geq 6$$
+
+\noindent
+Completion of Breadth-Social Science and Breadth- Humanities:
+$$\sum_{j=1}^{12} x_{29,j} \geq 2$$
+$$ \sum_{j=1}^{12} x_{30,j} \geq 2$$
+\noindent
+Completion of the 15 credit interdisciplinary requirement:
+$$ 3 \sum_{j=1}^{12} x_{28,j} \geq 15$$
+
+
+
+
+\subsection{Excel Solver}
+ We chose to use OpenSolver for our MIP model \cite{OpenSolver}. OpenSolver works similarly to Excel Solver as it can optimize the Objective Function after implementing constraints on the spreed sheet. However, OpenSolver can work smoothly with larger number of decision variables and constraints. 
+\section{Result}
+After executing OpenSolver, the minimized value for the Objective Function is $76$. OpenSolver was ran multiple times, providing the exact same Objective Function value, and decision variable value. Although there is flexibility with the constraints, the algorithm that OpenSolver uses provides us with the exact same results. The optimal placements of courses for our course planner is displayed in the following tables:
+
+\begin{center}
+ \begin{tabular}{|c c c c|} 
+ \hline
+ Fall 1 & Spring 1 & Fall 2 & Spring 2 \\ [0.5ex] 
+ \hline\hline
+ CMPT 120 & CMPT 129 & CMPT 225 & MACM 201  \\ 
+ \hline
+ MACM 101 & MATH 152 & MATH 251 & MATH 208W \\
+ \hline
+ MATH 151 & INTR & STAT 270 & STAT 285 \\
+ \hline
+ B-SOC & B-SOC & MATH 232/240 & MATH 308\\
+ \hline
+ B-HUM & B-HUM & INTR & ELEC\\ [1ex] 
+ \hline
+\end{tabular}
+
+ \begin{tabular}{|c c c c|} 
+ \hline
+ Fall 3 & Spring 3 & Fall 4 & Spring 4 \\ [0.5ex] 
+ \hline\hline
+  MATH 408 & STAT 380 & MATH 348 & MATH 402W \\ 
+ \hline
+  STAT 350 & CMPT 307 & MATH 309 & MATH 448 \\
+ \hline
+  MATH 343 & MACM 316 & UP-STAT & UP-STAT \\
+ \hline
+ MATH 345 & INTR & INTR & INTR\\
+ \hline
+ ELEC & ELEC & ELEC & ELEC \\ [1ex] 
+ \hline
+\end{tabular}
+\end{center}
+Legend:
+\begin{enumerate}
+    \item Elective = ELEC
+    \item Breadth-Humanities = B-HUM
+    \item Breadth-Social Sciences = B-SOC
+    \item Interdisciplinary Course = INTR
+    \item Level 3XX or 4XX Statistics Course = UP-STAT
+\end{enumerate}
+
+\noindent
+The above result is sensible and reasonable following that the student takes a full academic workload every semester, each course is taken in their respective academic level. Moreover since every course of from the choose n courses from m possible courses are taken, the student is able to freely remove courses from that category to create a more balanced workload, while still satisfying the requirements.
+
+\medskip
+\noindent
+As well, we created a variant that allowed for courses to be taken over the Summer semester, this was done by changing the cost value for summer semesters to reflect the normal cost for the year. We also changed the constraint for 'number of required courses per semester $\leq$ 4' to '$\leq$ 3' to further ease down the workload. Executing OpenSolver for this model resulted in an Objective Function value of 85. The optimal placements of courses for our course planner with Summer semester is displayed in the following tables:
+
+\begin{center}
+ \begin{tabular}{|c c c c c c|} 
+ \hline
+ Fall 1 & Spring 1 & Summer 1 & Fall 2 & Spring 2 & Summer 2\\ [0.5ex] 
+ \hline\hline
+ CMPT 120 & CMPT 129 &B-SOC& MACM 201 & MATH 208W& CMPT 225 \\ 
+ \hline
+ MACM 101 & MATH 152 &ELEC& STAT 270 & STAT 285& MATH 251\\
+ \hline
+ MATH 151 & INTR & &MATH 232/240 & MATH 308& INTR\\
+ \hline
+  & INTR & & INTR &ELEC &B-HUM\\
+ \hline
+  & B-SOC & & ELEC & &\\ [1ex] 
+ \hline
+\end{tabular}
+
+ \begin{tabular}{|c c c c c c|} 
+ \hline
+ Fall 3 & Spring 3 & Summer 3 & Fall 4 & Spring 4 & Summer 4 \\ [0.5ex] 
+ \hline\hline
+  MATH 408 & STAT 380 & CMPT 307 &MATH 348 & MATH 402W & ELEC\\ 
+ \hline
+  STAT 350 & MACM 316 & & MATH 309 & MATH 448 &\\
+ \hline
+  MATH 343 & UP-STAT &  &MATH 345 & UP-STAT &\\
+ \hline
+   & INTR &  &ELEC & INTR &\\
+ \hline
+    &  &  & &  & \\ [1ex] 
+ \hline
+\end{tabular}
+\end{center}
+
+\noindent
+Similarly, running OpenSolver numerous times provides us with the same result. This result is less sensible than the original planner, as the number of courses enrolled for per semester is sporadic spanning from one to five courses. 
+\section {Discussion}
+
+From the simplifications made to model, this course planner only holds under the assumptions we made prior. We assumed that the course availability will not change within the four years of study, but they are frequently updated on a 2 year cycle. If changes were to be made, the model may be held invalid for upper division courses. Moreover, we assumed that every course will be offered in the Burnaby campus since that is the primary location of the Undergraduate OR program, but multiple 300 and 400 level courses are still held in the SFU Surrey Campus, the primary location of the OR Graduate program and the previous location of the Undergraduate OR program. The time travelling between campuses may cause trouble in course scheduling for upper division courses. \\
+
+We also assumed that the student is following a standard four-year graduation plan, when in reality the majority of students only enroll in 3-4 courses per semester, seldom five courses. As well students often enroll for Cooperative Education (COOP), Study Abroad, or Semester in Dialogue. This model could be further developed by the creation of three COOP semesters, as well as creating empty semesters for the opportunity to partake in other programs that SFU offers.\\
+
+Furthermore, due to the nature of some upper-division courses in the program that are offered once per year or once per two years, we made the assumption that the student would start their first year of study at SFU on an even year. Due to lack of time, we were unable to create a second model that would allow for the study to start on an odd year.\\
+
+More improvements could be made to the model, such as obtaining data on what specific times courses are often offered each semester, which would allow us to have multiple classes back-to-back and would remove the possibility of large gaps within the timetable. Moreover, we assumed that the student will take any available course that fits in the interdisciplinary requirement,but since OR is an interdisciplinary field of study, the courses from the interdisciplinary requirements are able to be tailored to the student's interest. This would help create suggested time tables for students interested in Business OR or Computational OR. 
+
+
+
+\newpage
+\begin{thebibliography}{9}
+
+\bibitem{ORCalendar}
+SFU Student Services, "Operations Research Major",March 15, 2020
+\\\url{http://www.sfu.ca/students/calendar/2020/summer/programs/operations-research/major/bachelor-of-science.html}. 
+
+\bibitem{CMPTCourses}
+SFU School of Computing Science, "Course Schedules", March 15, 2020
+\\\url{https://www.sfu.ca/computing/current-students/undergraduate-students/student-resources/course-schedules.html}
+
+\bibitem{STATCourses}
+SFU Department of Statistics and Actuarial Science, "Course Information and Outlines", March 15, 2020
+\\\url{https://www.stat.sfu.ca/teaching/outlines.html}
+
+\bibitem{MATHCourses}
+SFU Department of Mathematics, "Timetables \& Exam Schedules", March 15, 2020
+\\\url{https://www.sfu.ca/math/undergraduate/current-students/courses/timetable-exam-schedules.html}
+
+\bibitem{OpenSolver}
+OpenSolver, "About OpenSolver", March 28, 2020
+\\\url{https://opensolver.org/}
+
+
+
+
+\end{thebibliography}
+
+
+
+\end{document}
+
