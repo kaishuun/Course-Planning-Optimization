@@ -1,5 +1,12 @@
 # Course-Planning-Optimization
 
+## Table of Contents
+* [Introduction](https://github.com/kaishuun/Course-Planning-Optimization#introduction)
+* [Data Collection](https://github.com/kaishuun/Course-Planning-Optimization#data-collection)
+* [Modelling](https://github.com/kaishuun/Course-Planning-Optimization#modelling)
+* [Results](https://github.com/kaishuun/Course-Planning-Optimization#results)
+* [Conclusion](https://github.com/kaishuun/Course-Planning-Optimization#conclusion)
+
 ## Introduction 
 
 The Operations Research(OR) undergraduate program at Simon Fraser University(SFU) has one of the lowest amonut of students in comparison to other programs under the Faculty of Science. In a report by SFU, there were only 10 OR students in the program.
