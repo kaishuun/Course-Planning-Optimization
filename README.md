@@ -63,4 +63,4 @@ Legend:
 
 Hope this project helps any incoming undergraduate Operations Research Students with course planning! Course planning is something that I do semesterly, as plans change due to Co-op of if courses clashes between the departments. To see a more in depth report, with the physical mathematical model described in detail [click here](https://github.com/kaishuun/Course-Planning-Optimization/blob/master/project%20report.pdf)
 
-This report could also be found on the 2018-2020 Version of [Analytics Now](https://journals.lib.sfu.ca/index.php/analytics-now/index), an undergrduate journal of Operations Research.
+This report could also be found on the 2019-2020 Version of [Analytics Now](https://journals.lib.sfu.ca/index.php/analytics-now/index), an undergrduate journal of Operations Research.
